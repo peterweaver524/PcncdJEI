@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup Node and pnpm
-        uses: silverhand-io/actions-node-pnpm-run-steps@v1.2.2
 
       - name: Build
         run: pnpm -- lerna run build --stream
@@ -24,7 +23,6 @@ jobs:
       - name: Prune
         run: rm -rf node_modules packages/*/node_modules && pnpm i
         env:
-          NODE_ENV: production
 
       - name: Setup env
         working-directory: packages/core
@@ -37,14 +35,12 @@ jobs:
         with:
           key: ${{ secrets.DEV_SSH_KEY }}
           known_hosts: ${{ secrets.DEV_SSH_KNOWN_HOSTS }}
-          config: ${{ secrets.DEV_SSH_CONFIG }}
 
       - name: Rsync folder
         run: rsync --filter='exclude .git' -r -a --delete-before --ignore-times ./ $DEV_SERVER_IP:~/logto
         env:
           DEV_SERVER_IP: ${{ secrets.DEV_SERVER_IP }}
 
-      - name: Sleep for 5 seconds
         run: sleep 5s
 
       - name: Health check
